@@ -23,7 +23,6 @@ def floodFill(image, map):
     directions = [(0, 0, -1), (1, 1, 0), (2, 0, 1), (3, -1, 0)]
     #                  up        right      down       left
     # marker, x, y
-    print(image)
     while queue:
         r,c = queue.popleft()
         for i, dr, dc in directions:
@@ -35,46 +34,51 @@ def floodFill(image, map):
                     queue.append((nr, nc))
     return image
 
-while currentPos > 0:
+def main():
+    while currentPos > 0:
 
-    result = floodFill(Matrix, wallMap)
-    for row in result:
-        print(*row)
-    dr, dc = 0, 0
-    lowest = 5000
+        result = floodFill(Matrix, wallMap)
+        print(result)
+        for row in result:
+            print(*row)
+        dr, dc = 0, 0
+        lowest = 5000
 
-    if API.wallFront():
-        wallMap[current_x][current_y][0] = 1
-        if current_y >0:
-            wallMap[current_x][current_y-1][2] = 1
-    else:
-        lowest = Matrix[current_x][current_y-1]
-        dr, dc = 0, -1
+        if API.wallFront():
+            wallMap[current_x][current_y][0] = 1
+            if current_y >0:
+                wallMap[current_x][current_y-1][2] = 1
+        else:
+            lowest = Matrix[current_x][current_y-1]
+            dr, dc = 0, -1
 
-    if API.wallRight():
-        wallMap[current_x][current_y][1] = 1
-        if current_x >0:
-            wallMap[current_x+1][current_y][3] = 1
-    elif lowest > Matrix[current_x+1][current_y]:
-        lowest = Matrix[current_x+1][current_y]
-        dr, dc = 1, 0
+        if API.wallRight():
+            wallMap[current_x][current_y][1] = 1
+            if current_x >0:
+                wallMap[current_x+1][current_y][3] = 1
+        elif lowest > Matrix[current_x+1][current_y]:
+            lowest = Matrix[current_x+1][current_y]
+            dr, dc = 1, 0
 
-    if API.wallBack():
-        wallMap[current_x][current_y][2] = 1
-        if current_y<15:
-            wallMap[current_x][current_y+1][0] = 1
-    elif lowest > Matrix[current_x][current_y+1]:
-        lowest = Matrix[current_x][current_y+1]
-        dr, dc = 0, 1
+        if API.wallBack():
+            wallMap[current_x][current_y][2] = 1
+            if current_y<15:
+                wallMap[current_x][current_y+1][0] = 1
+        elif lowest > Matrix[current_x][current_y+1]:
+            lowest = Matrix[current_x][current_y+1]
+            dr, dc = 0, 1
 
-    if API.wallLeft():
-        wallMap[current_x][current_y][3] = 1
-        if current_x<15:
-            wallMap[current_x-1][current_y][1] = 1
-    elif lowest > Matrix[current_x-1][current_y]:
-        lowest = Matrix[current_x-1][current_y]
-        dr, dc = -1, 0
+        if API.wallLeft():
+            wallMap[current_x][current_y][3] = 1
+            if current_x<15:
+                wallMap[current_x-1][current_y][1] = 1
+        elif lowest > Matrix[current_x-1][current_y]:
+            lowest = Matrix[current_x-1][current_y]
+            dr, dc = -1, 0
 
-    current_x += dr
-    current_y += dc
-    Matrix = resetMatrix()
+        current_x += dr
+        current_y += dc
+        Matrix = resetMatrix()
+
+if __name__ == "__main__":
+    main()
