@@ -1,7 +1,6 @@
 from collections import deque
 import API
 import sys
-
 mHeight = API.mazeHeight() #height of maze
 mWidth = API.mazeWidth() #width of maze
 
@@ -36,6 +35,7 @@ def floodFill(image, map):
             if 0 <= nr < mWidth and 0 <= nc < mHeight and image[nr][nc] > image[r][c]+1: #try without +1
                 if map[r][c][i] !=1:
                     image[nr][nc] = image[r][c] + 1
+                    API.setText(nr, nc, image[nr][nc])
                     queue.append((nr, nc))
     return image
 
@@ -50,8 +50,10 @@ def main():
     while currentPos > 0:
 
         result = floodFill(Matrix, wallMap)
+        '''
         for row in result: #to edit
             print(*row)
+        '''
         dr, dc = 0, 0
         lowest = 1024
 
@@ -99,10 +101,13 @@ def main():
             else:
                 orientation = 0
         API.moveForward()
+        
         for row in wallMap:
             for group in row:
                 print(*group, sep="", end = "|")
             print()
+        print("\n" + str(orientation) + str(tdir) + "\n")
+
         current_x += dr
         current_y += dc
 
