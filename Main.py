@@ -1,8 +1,12 @@
 from collections import deque
 import API
+import sys
+
+mHeight = 16 #API.mazeHeight() #height of maze
+mWidth = 16 #API.mazeWidth() #width of maze
 
 def resetMatrix():
-    Matrix = [[512 for x in range(16)] for y in range(16)]
+    Matrix = [[512 for x in range(mWidth)] for y in range(mHeight)]
     Matrix[7][7] = 0
     Matrix[7][8] = 0
     Matrix[8][7] = 0
@@ -27,22 +31,27 @@ def floodFill(image, map):
         r,c = queue.popleft()
         for i, dr, dc in directions:
             nr, nc = r + dr, c + dc
-            if map[r][c][i] !=1:
-                #if 0 <= nr < 16 and 0 <= nc < 16 and image[nr][nc] == 512:
-                if 0 <= nr < 16 and 0 <= nc < 16 and image[nr][nc] > image[r][c]+1: #try without +1
+            #if 0 <= nr < 16 and 0 <= nc < 16 and image[nr][nc] == 512:
+            if 0 <= nr < 16 and 0 <= nc < 16 and image[nr][nc] > image[r][c]+1: #try without +1
+                if map[r][c][i] !=1:
                     image[nr][nc] = image[r][c] + 1
                     queue.append((nr, nc))
     return image
 
 def main():
+    Matrix = resetMatrix()
+    start_x, start_y = 0,0
+    current_x, current_y = start_x, start_y
+    currentPos = Matrix[start_x][start_y]
+
+    wallMap = [[[0, 0, 0, 0] for x in range(16)] for y in range(16)] #N, E, S, W 1 for a wall, 0 for open or unknown
     while currentPos > 0:
 
         result = floodFill(Matrix, wallMap)
-        print(result)
-        for row in result:
+        for row in result: #to edit
             print(*row)
         dr, dc = 0, 0
-        lowest = 5000
+        lowest = 1024
 
         if API.wallFront():
             wallMap[current_x][current_y][0] = 1
