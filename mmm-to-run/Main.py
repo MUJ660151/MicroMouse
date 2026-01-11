@@ -2,8 +2,8 @@ from collections import deque
 import API
 import sys
 
-mHeight = 16 #API.mazeHeight() #height of maze
-mWidth = 16 #API.mazeWidth() #width of maze
+mHeight = API.mazeHeight() #height of maze
+mWidth = API.mazeWidth() #width of maze
 
 def resetMatrix():
     Matrix = [[512 for x in range(mWidth)] for y in range(mHeight)]
@@ -41,7 +41,7 @@ def floodFill(image, map):
 
 def main():
     Matrix = resetMatrix()
-    start_x, start_y = 0,0
+    start_x, start_y = 0, 15
     current_x, current_y = start_x, start_y
     currentPos = Matrix[start_x][start_y]
     orientation = 0
@@ -56,38 +56,38 @@ def main():
         lowest = 1024
 
         if API.wallFront():
-            wallMap[current_x][current_y][0] = 1
+            wallMap[current_y][current_x][0] = 1
             if current_y >0:
-                wallMap[current_x][current_y-1][2] = 1
+                wallMap[current_y-1][current_x][2] = 1
         else:
-            lowest = Matrix[current_x][current_y-1]
+            lowest = Matrix[current_y-1][current_x]
             dr, dc = 0, -1
             tdir = 0
 
         if API.wallRight():
-            wallMap[current_x][current_y][1] = 1
+            wallMap[current_y][current_x][1] = 1
             if current_x <15:
-                wallMap[current_x+1][current_y][3] = 1
-        elif lowest > Matrix[current_x+1][current_y]:
-            lowest = Matrix[current_x+1][current_y]
+                wallMap[current_y][current_x+1][3] = 1
+        elif lowest > Matrix[current_y][current_x+1]:
+            lowest = Matrix[current_y][current_x+1]
             dr, dc = 1, 0
             tdir = 1
 
         if API.wallBack():
-            wallMap[current_x][current_y][2] = 1
+            wallMap[current_y][current_x][2] = 1
             if current_y < 15:
-                wallMap[current_x][current_y+1][0] = 1
-        elif lowest > Matrix[current_x][current_y+1]:
-            lowest = Matrix[current_x][current_y+1]
+                wallMap[current_y+1][current_x][0] = 1
+        elif lowest > Matrix[current_y+1][current_x]:
+            lowest = Matrix[current_y+1][current_x]
             dr, dc = 0, 1
             tdir = 2
 
         if API.wallLeft():
-            wallMap[current_x][current_y][3] = 1
+            wallMap[current_y][current_x][3] = 1
             if current_x > 0:
-                wallMap[current_x-1][current_y][1] = 1
-        elif lowest > Matrix[current_x-1][current_y]:
-            lowest = Matrix[current_x-1][current_y]
+                wallMap[current_y][current_x-1][1] = 1
+        elif lowest > Matrix[current_y][current_x-1]:
+            lowest = Matrix[current_y][current_x-1]
             dr, dc = -1, 0
             tdir = 3
 
