@@ -35,14 +35,14 @@ def floodFill(image, map):
             if 0 <= nr < mWidth and 0 <= nc < mHeight and image[nr][nc] > image[r][c]+1: #try without +1
                 if map[r][c][i] !=1:
                     image[nr][nc] = image[r][c] + 1
-                    API.setText(nr, nc, image[nr][nc])
                     queue.append((nr, nc))
+                    API.setText(nr, nc, image[nr][nc])
     return image
 
 def main():
     Matrix = resetMatrix()
     start_x, start_y = 0, 15
-    current_x, current_y = start_x, start_y
+    current_c, current_r = start_x, start_y
     currentPos = Matrix[start_x][start_y]
     orientation = 0
 
@@ -56,60 +56,71 @@ def main():
         '''
         dr, dc = 0, 0
         lowest = 1024
-
         if API.wallFront():
-            wallMap[current_y][current_x][0] = 1
-            if current_y >0:
-                wallMap[current_y-1][current_x][2] = 1
+            wallMap[current_r][current_c][0] = 1
+            if current_r >0:
+                wallMap[current_r-1][current_c][2] = 1
+            print("Wall front: true")
         else:
-            lowest = Matrix[current_y-1][current_x]
-            dr, dc = 0, -1
+            lowest = Matrix[current_r-1][current_c]
+            dr, dc = -1, 0
             tdir = 0
+            print("Wall front: false")
 
         if API.wallRight():
-            wallMap[current_y][current_x][1] = 1
-            if current_x <15:
-                wallMap[current_y][current_x+1][3] = 1
-        elif lowest > Matrix[current_y][current_x+1]:
-            lowest = Matrix[current_y][current_x+1]
-            dr, dc = 1, 0
+            wallMap[current_r][current_c][1] = 1
+            if current_c <15:
+                wallMap[current_r][current_c+1][3] = 1
+            print("Wall right: true")
+        elif lowest > Matrix[current_r][current_c+1]:
+            lowest = Matrix[current_r][current_c+1]
+            dr, dc = 0, 1
             tdir = 1
+            print("Wall right: false")
 
         if API.wallBack():
-            wallMap[current_y][current_x][2] = 1
-            if current_y < 15:
-                wallMap[current_y+1][current_x][0] = 1
-        elif lowest > Matrix[current_y+1][current_x]:
-            lowest = Matrix[current_y+1][current_x]
-            dr, dc = 0, 1
+            wallMap[current_r][current_c][2] = 1
+            if current_r < 15:
+                wallMap[current_r+1][current_c][0] = 1
+            print("Wall back: true")
+        elif lowest > Matrix[current_r+1][current_c]:
+            lowest = Matrix[current_r+1][current_c]
+            dr, dc = 1, 0
             tdir = 2
+            print("Wall back: false")
 
         if API.wallLeft():
-            wallMap[current_y][current_x][3] = 1
-            if current_x > 0:
-                wallMap[current_y][current_x-1][1] = 1
-        elif lowest > Matrix[current_y][current_x-1]:
-            lowest = Matrix[current_y][current_x-1]
-            dr, dc = -1, 0
+            wallMap[current_r][current_c][3] = 1
+            if current_c > 0:
+                wallMap[current_r][current_c-1][1] = 1
+            print("Wall left: true")
+        elif lowest > Matrix[current_r][current_c-1]:
+            print("Wall left: false")
+            lowest = Matrix[current_r][current_c-1]
+            dr, dc = 0, -1
             tdir = 3
-
+        print(lowest)
+        '''
+        for row in wallMap:
+            for group in row:
+                print(*group, sep="", end = "|")
+            print()
+        print()
+        '''
+        #tdir = tdir - orientation
         #TODO: ADD DIAGONAL PATH FOLLOWING ABILITIES
+        print(current_c, current_r)
         while orientation != tdir: #TODO: add fastest path algorith/ability to turn left or right depending on whats closer to target
             API.turnRight90()
             if orientation < 3:
                 orientation += 1
             else:
                 orientation = 0
+            print(orientation, tdir)
         API.moveForward()
-        
-        for row in wallMap:
-            for group in row:
-                print(*group, sep="", end = "|")
-            print()
-        print("\n" + str(orientation) + str(tdir) + "\n")
 
-        current_x += dr
-        current_y += dc
+        current_r += dr
+        current_c += dc
 
         Matrix = resetMatrix()
 
