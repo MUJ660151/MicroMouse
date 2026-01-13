@@ -1,3 +1,7 @@
+'''
+API created by mackorone
+'''
+
 import sys
 
 class MouseCrashedError(Exception):
