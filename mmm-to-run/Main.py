@@ -4,7 +4,7 @@ import sys
 mHeight = API.mazeHeight() #height of maze
 mWidth = API.mazeWidth() #width of maze
 
-dV = 512 # default value for floor tile
+dV = 1 # default value for floor tile
 hasWallVal = 'x' #value impassible tile/wall tile
 noWallVal = 'o' #value of passable or unknown tile/no known wall
 Matrix = [[dV for x in range(mWidth)] for y in range(mHeight)]
@@ -30,12 +30,54 @@ for r, row in enumerate(Matrix):
     else:
         wMatrix.append(owRow)
 
-for i in range(mHeight*2+1):
-    sublist = []
-    if i % 2 != 0:
-        for c in range(mWidth*2+1):
-            pass
+nMatrix = []
 
+#LAST ROW DOES NOT WORK
+for i in range(mHeight*2+1): #creates each row
+    sublist = []
+    for e in range(mWidth*2+1):
+        if 0 < i < 2*mWidth:
+            if i % 2 != 0:
+                if e % 2 != 0: #if  an odd column
+                    sublist.append(dV)
+                elif 0 < e < 2*mWidth:
+                    sublist.append(noWallVal)
+                else:
+                    sublist.append(hasWallVal)
+            else:
+                if e % 2 != 0:
+                    sublist.append(noWallVal)
+                else:
+                    sublist.append(hasWallVal)
+        else:
+            sublist.append(hasWallVal)
+    nMatrix.append(sublist)
+    print(*sublist)
+
+
+        
+'''
+    if i % 2 != 0: #AKA is odd
+        for c in range(mWidth*2+1): #creates each collumn
+            if c % 2 != 0: #AKA is odd
+                sublist.append(dV)
+            elif 0 < c <= mWidth*2: #even + not on edges
+                sublist.append(noWallVal)
+            else: # on edges
+                sublist.append(hasWallVal)
+    elif 0 < i < mWidth*2+1: #not first or last row, wall row
+        for c in range(mWidth*2+1):
+            if c % 2 == 0: # is even on a wall row (impassable)
+                sublist.append(hasWallVal)
+            else: #is odd on a wall row(passable)
+                sublist.append(noWallVal)
+    else: #first and last row
+        for c in range(2*mWidth+1):
+            sublist.append(hasWallVal)
+    nMatrix.append(sublist)
+    print(*sublist)
+    '''
+    
 
 centerTiles = [(15,15), (17,17), (15, 17), (17, 15)]
 
