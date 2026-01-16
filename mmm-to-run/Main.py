@@ -32,14 +32,16 @@ for i in range(mHeight*2+1): #creates each row
 
 
 #TODO make center scale to different maze dimensions
-centerTiles = [(15,15), (17,17), (15, 17), (17, 15)]
+centerTiles = [(15,15), (15,17), (17, 15), (17, 17), (7,7), (7,8), (8,7),(8,8)]
 
 def resetMatrix(Matrix):
     for i in range(1, mHeight*2+1, 2):
         for f in range(1, mWidth*2+1, 2):
             Matrix[i][f] = dV
-    for r,c in centerTiles:
-        Matrix[r][c] = 0
+    Matrix[centerTiles[0][0]][centerTiles[0][1]] = 0
+    Matrix[centerTiles[1][0]][centerTiles[1][1]] = 0
+    Matrix[centerTiles[2][0]][centerTiles[2][1]] = 0
+    Matrix[centerTiles[3][0]][centerTiles[3][1]] = 0
     return Matrix
             
     #resets value of non wall tiles by itterating over odd indexes
@@ -69,29 +71,29 @@ def addWall(x, y, direction):
 
     pass
 
+'''
 def withinLimits(x, y):
     if 0 <= x < 32 and 0 <= y < 32:
         return True
-    return False
+    return False'''
 
 def main():
     global Matrix
     start_r, start_c = 31, 1
-    API.setWall(0,0,'w')
     current_r, current_c = start_r, start_c
     currentPos = Matrix[current_r][current_c]
-    directions2 = [(-2, 0), (0, 2), (2, 0), (0, -2)]
     directions1 = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    directions2 = [(-2, 0), (0, 2), (2, 0), (0, -2)]
     orientation = 0
-    er, ec = 0, 0
+    API.setText(centerTiles[4][0], centerTiles[4][1], 0)
+    API.setText(centerTiles[5][0], centerTiles[5][1], 0)
+    API.setText(centerTiles[6][0], centerTiles[6][1], 0)
+    API.setText(centerTiles[7][0], centerTiles[7][1], 0)
 
     directionNESW = ['n', 'e', 's', 'w']
 
     while currentPos > 0:
-
-        Matrix = floodFill(resetMatrix(Matrix))
-        for r,c in centerTiles:
-            API.setText(int((c-1)/2), 15-int((r-1)/2), 0)
+        wallFound = False
         """for row in Matrix:
             for item in row:
                 print(f"{str(item):^2}", end="")
@@ -99,75 +101,78 @@ def main():
 
         lowest = 4028
 
-
-        o2R, o2C = directions2[orientation]
+        oR, oC = directions1[orientation]
+        o2R, o2C = 2*oR, 2*oC
         if API.wallFront():
-            oR, oC = directions1[orientation]
+            wallFound = True
             API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[orientation])
             Matrix[current_r+oR][current_c+oC] = hasWallVal
-        elif withinLimits(current_r+o2R, current_c+o2C):
-            print(Matrix[current_r+o2R][current_c+o2C])
+        elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32:
             lowest = Matrix[current_r+o2R][current_c+o2C]
             dirOffset = 0
 
 
-        o2R, o2C = directions2[(1+orientation)%4]
+        oR, oC = directions1[(1+orientation)%4]
+        o2R, o2C = 2*oR, 2*oC
         if API.wallRight():
-            oR, oC = directions1[(1+orientation)%4]
+            wallFound = True
             API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(1+orientation)%4])
             Matrix[current_r+oR][current_c+oC] = hasWallVal
-        elif withinLimits(current_r+o2R, current_c+o2C): #current_c < 31:
+        elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32: #current_c < 31:
             if lowest > Matrix[current_r+o2R][current_c+o2C]:
                 lowest = Matrix[current_r+o2R][current_c+o2C]
                 dirOffset = 1
         
-
-        o2R, o2C = directions2[(2+orientation)%4]
+        oR, oC = directions1[(2+orientation)%4]
+        o2R, o2C = 2*oR, 2*oC
         if API.wallBack():
-            oR, oC = directions1[(2+orientation)%4]
-            print("back", oR, oC, (2+orientation)%4)
+            wallFound = True
             API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(2+orientation)%4])
             Matrix[current_r+oR][current_c+oC] = hasWallVal
             # +1 
-        elif withinLimits(current_r+o2R, current_c+o2C): #current_r < 31:
-            print(Matrix[current_r+o2R][current_c+o2C])
+        elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32: #current_r < 31:
             if lowest > Matrix[current_r+o2R][current_c+o2C]:
                 lowest = Matrix[current_r+o2R][current_c+o2C]
                 dirOffset = 2
         
 
-        o2R, o2C = directions2[(3+orientation)%4]
+        oR, oC = directions1[(3+orientation)%4]
+        o2R, o2C = 2*oR, 2*oC
         if API.wallLeft():
-            oR, oC = directions1[(3+orientation)%4]
-            print("left", oR, oC, (3+orientation)%4)
+            wallFound = True
             API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(3+orientation)%4])
             Matrix[current_r+oR][current_c+oC] = hasWallVal
-        elif withinLimits(current_r+o2R, current_c+o2C): #current_c > 1:
-            print(Matrix[current_r+o2R][current_c+o2C])
+        elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32: #current_c > 1:
             if lowest > Matrix[current_r+o2R][current_c+o2C]:
                 lowest = Matrix[current_r+o2R][current_c+o2C]
                 dirOffset = 3
 
         #TODO FIX BACKTRACKING
-        #TODO ADD ABILITY TO TURN LEFT
         #TODO: ADD DIAGONAL PATH FOLLOWING ABILITIES
         #orientation = (orientation+tdir)%4
 
         tOR = (orientation+dirOffset)%4
         er, ec = directions2[tOR]
 
-        while orientation != tOR:
+        turns = (tOR - orientation) % 4
+        
+        if turns == 1:
             API.turnRight90()
-            if orientation < 3:
-                orientation+= 1
-            else:
-                orientation = 0
-        '''
-        for i in range(tdir):
+        elif turns == 2:
             API.turnRight90()
-            '''
+            API.turnRight90()
+        elif turns == 3:
+            API.turnLeft90()
+        orientation = tOR
+        
+        """print(turns)
+        for i in range(turns):
+            API.turnRight90()
+        orientation = tOR"""
+
         API.moveForward()
-        API.clearAllText()
+        if wallFound:
+            Matrix = floodFill(resetMatrix(Matrix))
         current_r += er
         current_c += ec
         currentPos = Matrix[current_r][current_c]
