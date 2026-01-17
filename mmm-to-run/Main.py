@@ -6,28 +6,29 @@ mWidth = API.mazeWidth() #width of maze
 
 dV = 512 # default value for floor tile
 hasWallVal = 'x' #value impassible tile/wall tile
-noWallVal = 'o' #value of passable or unknown tile/no known wall
+noWallVal = 'o' #value of passable tile/no wall
+outerWallunseen = 'z'
 
 Matrix = []
 
 for i in range(mHeight*2+1): #creates each row
     sublist = []
     for e in range(mWidth*2+1):
-        if 0 < i < 2*mWidth:
+        if 0 < i < 2*mWidth and 0 < e < 2*mWidth:
             if i % 2 != 0:
                 if e % 2 != 0: #if  an odd column
                     sublist.append(dV)
-                elif 0 < e < 2*mWidth:
+                else: #elif 0 < e < 2*mWidth:
                     sublist.append(noWallVal)
-                else:
-                    sublist.append(hasWallVal)
+                #else:
+                    #sublist.append(hasWallVal)
             else:
                 if e % 2 != 0:
                     sublist.append(noWallVal)
                 else:
                     sublist.append(hasWallVal)
         else:
-            sublist.append(hasWallVal)
+            sublist.append(outerWallunseen)
     Matrix.append(sublist)
 
 
@@ -89,24 +90,24 @@ def main():
     API.setText(centerTiles[5][0], centerTiles[5][1], 0)
     API.setText(centerTiles[6][0], centerTiles[6][1], 0)
     API.setText(centerTiles[7][0], centerTiles[7][1], 0)
-
-    directionNESW = ['n', 'e', 's', 'w']
+    steps = 0
+    directionNESW = ('n', 'e', 's', 'w')
 
     while currentPos > 0:
         wallFound = False
-        """for row in Matrix:
-            for item in row:
-                print(f"{str(item):^2}", end="")
-            print()"""
 
         lowest = 4028
+        #TODO fix mouse sometimes needing to backtrack to update
+        #this is because the values of the tiles around it dont update
+        #until after it decides which is lowest
 
         oR, oC = directions1[orientation]
         o2R, o2C = 2*oR, 2*oC
         if API.wallFront():
-            wallFound = True
-            API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[orientation])
-            Matrix[current_r+oR][current_c+oC] = hasWallVal
+            if Matrix[current_r+oR][current_c+oC] != hasWallVal:
+                wallFound = True
+                API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[orientation])
+                Matrix[current_r+oR][current_c+oC] = hasWallVal
         elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32:
             lowest = Matrix[current_r+o2R][current_c+o2C]
             dirOffset = 0
@@ -115,42 +116,50 @@ def main():
         oR, oC = directions1[(1+orientation)%4]
         o2R, o2C = 2*oR, 2*oC
         if API.wallRight():
-            wallFound = True
-            API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(1+orientation)%4])
-            Matrix[current_r+oR][current_c+oC] = hasWallVal
+            if Matrix[current_r+oR][current_c+oC] != hasWallVal: # alt == noWallVal:
+                wallFound = True
+                API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(1+orientation)%4])
+                Matrix[current_r+oR][current_c+oC] = hasWallVal
         elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32: #current_c < 31:
             if lowest > Matrix[current_r+o2R][current_c+o2C]:
                 lowest = Matrix[current_r+o2R][current_c+o2C]
                 dirOffset = 1
-        
+            #elif lowest == Matrix[current_r+o2R][current_c+o2C]:
+
         oR, oC = directions1[(2+orientation)%4]
         o2R, o2C = 2*oR, 2*oC
         if API.wallBack():
-            wallFound = True
-            API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(2+orientation)%4])
-            Matrix[current_r+oR][current_c+oC] = hasWallVal
-            # +1 
+            if Matrix[current_r+oR][current_c+oC] != hasWallVal:
+                wallFound = True
+                API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(2+orientation)%4])
+                Matrix[current_r+oR][current_c+oC] = hasWallVal
         elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32: #current_r < 31:
             if lowest > Matrix[current_r+o2R][current_c+o2C]:
                 lowest = Matrix[current_r+o2R][current_c+o2C]
                 dirOffset = 2
-        
 
         oR, oC = directions1[(3+orientation)%4]
         o2R, o2C = 2*oR, 2*oC
         if API.wallLeft():
-            wallFound = True
-            API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(3+orientation)%4])
-            Matrix[current_r+oR][current_c+oC] = hasWallVal
+            if Matrix[current_r+oR][current_c+oC] != hasWallVal:
+                wallFound = True
+                API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(3+orientation)%4])
+                Matrix[current_r+oR][current_c+oC] = hasWallVal
         elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32: #current_c > 1:
             if lowest > Matrix[current_r+o2R][current_c+o2C]:
                 lowest = Matrix[current_r+o2R][current_c+o2C]
                 dirOffset = 3
+        
 
-        #TODO FIX BACKTRACKING
         #TODO: ADD DIAGONAL PATH FOLLOWING ABILITIES
-        #orientation = (orientation+tdir)%4
-
+        
+        if wallFound:
+            steps+=1
+            Matrix = floodFill(resetMatrix(Matrix))
+            for row in Matrix:
+                for item in row:
+                    print(f"{str(item):^2}", end="")
+                print()
         tOR = (orientation+dirOffset)%4
         er, ec = directions2[tOR]
 
@@ -164,18 +173,13 @@ def main():
         elif turns == 3:
             API.turnLeft90()
         orientation = tOR
-        
-        """print(turns)
-        for i in range(turns):
-            API.turnRight90()
-        orientation = tOR"""
+    
 
         API.moveForward()
-        if wallFound:
-            Matrix = floodFill(resetMatrix(Matrix))
         current_r += er
         current_c += ec
         currentPos = Matrix[current_r][current_c]
+    print(steps)
 
 if __name__ == "__main__":
     main()
