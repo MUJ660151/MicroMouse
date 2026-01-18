@@ -14,7 +14,7 @@ directions = {
 }
 '''
 Matrix = [[0000 for x in range(m)] for x in range(n)]
-Visited = [False for _ in ]
+Visited = [False for _ in range(m)]
 if m % 2 == 0:
     x = int(m/2)
     y = int(n/2)

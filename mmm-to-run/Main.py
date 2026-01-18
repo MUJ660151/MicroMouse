@@ -97,9 +97,18 @@ def main():
         wallFound = False
 
         lowest = 4028
-        #TODO fix mouse sometimes needing to backtrack to update
-        #this is because the values of the tiles around it dont update
-        #until after it decides which is lowest
+
+#TODO fix mouse sometimes needing to backtrack to update
+#this is because the values of the tiles around it dont update
+#until after it decides which is lowest
+#TEMPFIX: reset matrix after each new wall found (done, )
+#LONGFIX: store all potentials coords, then reset, then pick
+
+#TODO: create binary representation of the maze with the first digit
+# 0/1 representing wether it has been visited and the last 4 representing
+#weither there is a wall in that direction (NESW) with 0 or 1
+
+#TODO: determine best turn priority when all else is equal
 
         oR, oC = directions1[orientation]
         o2R, o2C = 2*oR, 2*oC
@@ -108,6 +117,10 @@ def main():
                 wallFound = True
                 API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[orientation])
                 Matrix[current_r+oR][current_c+oC] = hasWallVal
+
+                steps+=1
+                Matrix = floodFill(resetMatrix(Matrix)) 
+                    
         elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32:
             lowest = Matrix[current_r+o2R][current_c+o2C]
             dirOffset = 0
@@ -120,6 +133,10 @@ def main():
                 wallFound = True
                 API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(1+orientation)%4])
                 Matrix[current_r+oR][current_c+oC] = hasWallVal
+
+                steps+=1
+                Matrix = floodFill(resetMatrix(Matrix)) 
+                    
         elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32: #current_c < 31:
             if lowest > Matrix[current_r+o2R][current_c+o2C]:
                 lowest = Matrix[current_r+o2R][current_c+o2C]
@@ -133,6 +150,10 @@ def main():
                 wallFound = True
                 API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(2+orientation)%4])
                 Matrix[current_r+oR][current_c+oC] = hasWallVal
+
+                steps+=1
+                Matrix = floodFill(resetMatrix(Matrix)) 
+                    
         elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32: #current_r < 31:
             if lowest > Matrix[current_r+o2R][current_c+o2C]:
                 lowest = Matrix[current_r+o2R][current_c+o2C]
@@ -145,6 +166,10 @@ def main():
                 wallFound = True
                 API.setWall(int((current_c-1)/2), 15-int((current_r-1)/2), directionNESW[(3+orientation)%4])
                 Matrix[current_r+oR][current_c+oC] = hasWallVal
+
+                steps+=1
+                Matrix = floodFill(resetMatrix(Matrix)) 
+
         elif 0 <= current_r+o2R < 32 and 0 <= current_c+o2C < 32: #current_c > 1:
             if lowest > Matrix[current_r+o2R][current_c+o2C]:
                 lowest = Matrix[current_r+o2R][current_c+o2C]
@@ -153,13 +178,13 @@ def main():
 
         #TODO: ADD DIAGONAL PATH FOLLOWING ABILITIES
         
-        if wallFound:
+        '''if wallFound:
             steps+=1
             Matrix = floodFill(resetMatrix(Matrix))
             for row in Matrix:
                 for item in row:
                     print(f"{str(item):^2}", end="")
-                print()
+                print()'''
         tOR = (orientation+dirOffset)%4
         er, ec = directions2[tOR]
 
