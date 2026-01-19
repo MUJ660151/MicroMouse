@@ -1,6 +1,6 @@
 from collections import deque
 import API
-import sys
+
 mHeight = API.mazeHeight() #height of maze
 mWidth = API.mazeWidth() #width of maze
 
@@ -73,6 +73,117 @@ def floodFill(image, goal):
                     API.setText(int((nc-1)/2), 15-int((nr-1)/2), image[nr][nc]) #TODO: make compatible with different maze sizes
     return image
 
+def addWall(x, y, direction):
+
+    pass
+
+def returnToStart(image, goal, orientation, centerStart, visited):
+    currentR, currentC = centerStart[0], centerStart[1]
+    print(currentR, currentC)
+    #API.setText(int((start[1]-1)/2), 15-int((start[0]-1)/2), 0)
+    API.setText(0, 0, 0)
+    directions = ((-1, 0), (0, 1), (1, 0), (0, -1))
+    directionNESW = ('n', 'e', 's', 'w')
+    """neighbours = [
+            directions[orientation],
+            directions[(1+orientation)%4],
+            directions[(2+orientation)%4],
+            directions[(3+orientation)%4]
+        ]"""
+    neighbours = [
+            orientation,
+            (1+orientation)%4,
+            (2+orientation)%4,
+            (3+orientation)%4
+        ]
+    image = floodFill(resetMatrix(image, 'return'), [goal]) 
+    currentPos = image[currentR][currentC]
+    print(currentPos)
+
+    while currentPos > 0:
+        """neighbours = [
+            orientation,
+            (1+orientation)%4,
+            (2+orientation)%4,
+            (3+orientation)%4
+        ]"""
+        lowest = 4028
+        if visited[currentR][currentC] == False:
+            wallFound = False
+            #TODO combine these conditions into method 
+            oR, oC = directions[neighbours[0]]
+            if API.wallFront():
+                if image[currentR+oR][currentC+oC] != hasWallVal:
+                    wallFound = True
+                    API.setWall(int((currentC-1)/2), 15-int((currentR-1)/2), directionNESW[neighbours[0]])
+                    image[currentR+oR][currentC+oC] = hasWallVal
+
+            oR, oC = directions[neighbours[1]]
+            if API.wallFront():
+                if image[currentR+oR][currentC+oC] != hasWallVal:
+                    wallFound = True
+                    API.setWall(int((currentC-1)/2), 15-int((currentR-1)/2), directionNESW[neighbours[1]])
+                    image[currentR+oR][currentC+oC] = hasWallVal      
+            
+            oR, oC = directions[neighbours[2]]
+            if API.wallFront():
+                if image[currentR+oR][currentC+oC] != hasWallVal:
+                    wallFound = True
+                    API.setWall(int((currentC-1)/2), 15-int((currentR-1)/2), directionNESW[neighbours[2]])
+                    image[currentR+oR][currentC+oC] = hasWallVal      
+
+            oR, oC = directions[neighbours[3]]
+            if API.wallFront():
+                if image[currentR+oR][currentC+oC] != hasWallVal:
+                    wallFound = True
+                    API.setWall(int((currentC-1)/2), 15-int((currentR-1)/2), directionNESW[neighbours[3]])
+                    image[currentR+oR][currentC+oC] = hasWallVal      
+
+            if wallFound == True:
+                image = floodFill(resetMatrix(image, 'return'), [goal])
+                
+            visited[currentR][currentC] =True
+
+        tr, tc = directions[neighbours[0]]
+        if 0 <= currentR+2*tr < 32 and 0 <= currentC+2*tc < 32:
+            if image[currentR+tr][currentC+tc] != hasWallVal:
+                if image[currentR+2*tr][currentC+2*tc] < lowest:
+                    lowest = image[currentR+2*tr][currentC+2*tc]
+                    er, ec = tr, tc
+                    tdir = 0
+
+        tr, tc = directions[neighbours[1]]
+        if 0 <= currentR+2*tr < 32 and 0 <= currentC+2*tc < 32:
+            if image[currentR+tr][currentC+tc] != hasWallVal:
+                if image[currentR+2*tr][currentC+2*tc] < lowest:
+                    lowest = image[currentR+2*tr][currentC+2*tc]
+                    er, ec = tr, tc
+                    tdir = 1
+
+        tr, tc = directions[neighbours[2]]
+        if 0 <= currentR+2*tr < 32 and 0 <= currentC+2*tc < 32:
+            if image[currentR+tr][currentC+tc] != hasWallVal:
+                if image[currentR+2*tr][currentC+2*tc] < lowest:
+                    lowest = image[currentR+2*tr][currentC+2*tc]
+                    er, ec = tr, tc
+                    tdir = 2
+
+        tr, tc = directions[neighbours[3]]
+        if 0 <= currentR+2*tr < 32 and 0 <= currentC+2*tc < 32:
+            if image[currentR+tr][currentC+tc] != hasWallVal:
+                if image[currentR+2*tr][currentC+2*tc] < lowest:
+                    lowest = image[currentR+2*tr][currentC+2*tc]
+                    er, ec = tr, tc
+                    tdir = 3
+        
+        orientation = (orientation+tdir)%4
+
+        currentR += 2*er
+        currentC += 2*ec
+        currentPos = image[currentR][currentC]
+
+
+
 def main():
     global Matrix
     start_r, start_c = 31, 1
@@ -94,25 +205,25 @@ def main():
         ]"""
     directionNESW = ('n', 'e', 's', 'w')
     centerGoal = [(15, 15), (17, 17), (17, 15), (15, 17)]
-    
+
     while currentPos > 0:
         wallFound = False
         Visited[current_r][current_c] = True 
     
         lowest = 4028
         next = []
-        """neighbours = [
-            directions1[orientation],
-            directions1[(1+orientation)%4],
-            directions1[(2+orientation)%4],
-            directions1[(3+orientation)%4]
-        ]""" #TODO figure out why this doesnt work when declared outside loop
         neighbours = [
-            orientation,
-            (1+orientation)%4,
-            (2+orientation)%4,
-            (3+orientation)%4
-        ]
+            directions2[orientation],
+            directions2[(1+orientation)%4],
+            directions2[(2+orientation)%4],
+            directions2[(3+orientation)%4]
+        ] #TODO see if this works when declared outside the loop
+
+        #TODO fix mouse sometimes needing to backtrack to update
+        #this is because the values of the tiles around it dont update
+        #until after it decides which is lowest
+        #TEMPFIX: reset matrix after each new wall found (done, )
+        #LONGFIX: store all potentials coords, then reset, then pick
 
         #TODO: create binary representation of the maze with the first digit
         # 0/1 representing wether it has been visited and the last 4 representing
@@ -123,7 +234,8 @@ def main():
             Visited[current_r][current_c] = True """
 
 
-        oR, oC = directions1[neighbours[0]]
+        #TODO implement neighbours list
+        oR, oC = directions1[orientation]
         o2R, o2C = 2*oR, 2*oC
         if API.wallFront():
             if Matrix[current_r+oR][current_c+oC] != hasWallVal:
@@ -135,7 +247,7 @@ def main():
 
 
 
-        oR, oC = directions1[neighbours[1]]
+        oR, oC = directions1[(1+orientation)%4]
         o2R, o2C = 2*oR, 2*oC
         if API.wallRight():
             if Matrix[current_r+oR][current_c+oC] != hasWallVal: # alt == noWallVal:
@@ -147,7 +259,7 @@ def main():
 
 
 
-        oR, oC = directions1[neighbours[2]]
+        oR, oC = directions1[(2+orientation)%4]
         o2R, o2C = 2*oR, 2*oC
         if API.wallBack():
             if Matrix[current_r+oR][current_c+oC] != hasWallVal:
@@ -159,7 +271,7 @@ def main():
 
 
 
-        oR, oC = directions1[neighbours[3]]
+        oR, oC = directions1[(3+orientation)%4]
         o2R, o2C = 2*oR, 2*oC
         if API.wallLeft():
             if Matrix[current_r+oR][current_c+oC] != hasWallVal:
@@ -174,23 +286,23 @@ def main():
             steps+=1
             Matrix = floodFill(resetMatrix(Matrix), centerGoal)
 
-        if 0 in next: 
-            er, ec = directions2[neighbours[0]]
+        if 0 in next and 0 <= current_r+neighbours[0][0] < 32 and 0 <= current_c+neighbours[0][1] < 32:
+            er, ec = neighbours[0]
             lowest = Matrix[current_r+er][current_c+ec]
             dirOffset = 0
-        if 1 in next: 
-            if Matrix[current_r+directions2[neighbours[1]][0]][current_c+directions2[neighbours[1]][1]] < lowest:
-                er, ec = directions2[neighbours[1]]
+        if 1 in next and 0 <= current_r+neighbours[1][0] < 32 and 0 <= current_c+neighbours[1][1] < 32:
+            if Matrix[current_r+neighbours[1][0]][current_c+neighbours[1][1]] < lowest:
+                er, ec = neighbours[1]
                 dirOffset = 1
                 lowest = Matrix[current_r+er][current_c+ec]
-        if 2 in next: 
-            if Matrix[current_r+directions2[neighbours[2]][0]][current_c+directions2[neighbours[2]][1]] < lowest:
-                er, ec = directions2[neighbours[2]]
+        if 2 in next and 0 <= current_r+neighbours[2][0] < 32 and 0 <= current_c+neighbours[2][1] < 32:
+            if Matrix[current_r+neighbours[2][0]][current_c+neighbours[2][1]] < lowest:
+                er, ec = neighbours[2]
                 dirOffset = 2
                 lowest = Matrix[current_r+er][current_c+ec]
-        if 3 in next: 
-            if Matrix[current_r+directions2[neighbours[3]][0]][current_c+directions2[neighbours[3]][1]] < lowest:
-                er, ec = directions2[neighbours[3]]
+        if 3 in next and 0 <= current_r+neighbours[3][0] < 32 and 0 <= current_c+neighbours[3][1] < 32:
+            if Matrix[current_r+neighbours[3][0]][current_c+neighbours[3][1]] < lowest:
+                er, ec = neighbours[3]
                 dirOffset = 3
                 lowest = Matrix[current_r+er][current_c+ec]
 
@@ -199,13 +311,15 @@ def main():
         
         tOR = (orientation+dirOffset)%4
         er, ec = directions2[tOR]
+
+        turns = (tOR - orientation) % 4
         
-        if dirOffset == 1:
+        if turns == 1:
             API.turnRight90()
-        elif dirOffset == 2:
+        elif turns == 2:
             API.turnRight90()
             API.turnRight90()
-        elif dirOffset == 3:
+        elif turns == 3:
             API.turnLeft90()
         orientation = tOR
     
@@ -215,6 +329,15 @@ def main():
         current_c += ec
         currentPos = Matrix[current_r][current_c]
     print(steps)
+    returnToStart(Matrix, (start_r, start_c), orientation, (current_r, current_c), Visited)
 
 if __name__ == "__main__":
     main()
+
+"""
+    f   r   b   l
+0   0   1   2   3
+1   1   2   3   0
+2   2   3   0   1
+3   3   0   1   2
+"""
