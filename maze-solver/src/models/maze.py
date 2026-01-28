@@ -27,6 +27,12 @@ class Maze:
             f.close()
         return array
     
+    def get_center_tiles(self):
+        return [self.MAZE_DATA[self.goalPos[1]-1][self.goalPos[0]-1],
+        self.MAZE_DATA[self.goalPos[1]+1][self.goalPos[0]-1],
+        self.MAZE_DATA[self.goalPos[1]-1][self.goalPos[0]+1],
+        self.MAZE_DATA[self.goalPos[1]+1][self.goalPos[0]+1]]
+    
     def draw_maze(self, screen):
         screen.fill(Maze.PATH_COLOR)
         wallsUp = 0
@@ -52,6 +58,8 @@ class Maze:
                     pygame.draw.rect(screen, Maze.PATH_COLOR, ((posX, posY), (rHeight, rWidth)))
                 elif col != 'S':# and col != 'G':
                     pygame.draw.rect(screen, Maze.WALL_COLOR, ((posX, posY), (rHeight, rWidth)))
+                    if col == 'G':
+                        self.goalPos = (x,y)
                 """else:
                     print("unrecognized character", x, y)"""
             if y %2==0:
