@@ -49,12 +49,11 @@ background = pygame.Surface(screen.get_size())
 background = background.convert()
 maze = Maze(filepath, background)
 #maze.draw_maze(background) 
-pygame.display.flip()
 
-sprite = Player(0, 15, playerImg, screen, maze.MAZE_DATA, background)
+sprite = Player(0, 15, playerImg, screen, maze, background)
 screen.blit(background, (0,0))
 screen.blit(sprite.image, sprite.rect)
-
+pygame.display.flip()
 while running:
     """
     events()
@@ -65,6 +64,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    sprite.rotate_on_center(90)
+
 
     
 

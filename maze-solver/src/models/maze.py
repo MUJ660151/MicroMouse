@@ -10,6 +10,7 @@ class Maze:
     WALL_WIDTH = 5
 
     def __init__(self, filename,screen):
+        self.wallList = []
         self.MAZE_DATA = self.__txt_to_list(filename)
         self.WIDTH = len(self.MAZE_DATA[0]) *Maze.CELL_SIZE
         self.HEIGHT = len(self.MAZE_DATA) *Maze.CELL_SIZE
@@ -26,7 +27,6 @@ class Maze:
                 line = f.readline()
             f.close()
         return array
-    
     def get_center_tiles(self):
         return [self.MAZE_DATA[self.goalPos[1]-1][self.goalPos[0]-1],
         self.MAZE_DATA[self.goalPos[1]+1][self.goalPos[0]-1],
@@ -58,6 +58,7 @@ class Maze:
                     pygame.draw.rect(screen, Maze.PATH_COLOR, ((posX, posY), (rHeight, rWidth)))
                 elif col != 'S':# and col != 'G':
                     pygame.draw.rect(screen, Maze.WALL_COLOR, ((posX, posY), (rHeight, rWidth)))
+                    self.wallList.append((posX, posY))
                     if col == 'G':
                         self.goalPos = (x,y)
                 """else:
