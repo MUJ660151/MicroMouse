@@ -118,10 +118,6 @@ def main():
         # 0/1 representing wether it has been visited and the last 4 representing
         #weither there is a wall in that direction (NESW) with 0 or 1
 
-        #TODO: determine best turn priority when all else is equal
-        """if not Visited[current_r][current_c]:
-            Visited[current_r][current_c] = True """
-
 
         oR, oC = directions1[neighbours[0]]
         o2R, o2C = 2*oR, 2*oC
@@ -173,26 +169,50 @@ def main():
         if wallFound == True:
             steps+=1
             Matrix = floodFill(resetMatrix(Matrix), centerGoal)
+        """          5      4      3      2      1
+        0123 score = 391.6, 620.4, 496.1, 107.9, 369.6
+        0132 score = 871.2, 620.4, 324.5, 107.9, 369.6
+        0312 score = 884.4, 673.2, 324.5, 107.9, 369.6
+        0321 score = 884.4, 653.4, 324.5, 107.9, 369.6
+        0213 score = 391.6, 620.4, 496.1, 107.9, 369.6
+        0231 score = 391.6, 653.4, 496.1, 107.9, 369.6
+        2310 score = 455.4, 270.6, 337.7, 103.5, 250.8
+        3210 score = 882.2, 270.6, 337.7, 103.5, 352
+        3102 score = 882.2, 246.4, 337.7, 103.5, 352
+        1302 score = 882.2, 246.4, 337.7, 103.5, 352
+        
+        """
+
+        #TODO add weighted direcetions for priority chosing
 
         if 0 in next: 
             er, ec = directions2[neighbours[0]]
-            lowest = Matrix[current_r+er][current_c+ec]
-            dirOffset = 0
+            x = Matrix[current_r+er][current_c+ec]
+            if x < lowest: 
+                dirOffset = 0
+                lowest = x
+        
         if 1 in next: 
-            if Matrix[current_r+directions2[neighbours[1]][0]][current_c+directions2[neighbours[1]][1]] < lowest:
-                er, ec = directions2[neighbours[1]]
+            er, ec = directions2[neighbours[1]]
+            x = Matrix[current_r+er][current_c+ec]
+            if x < lowest:
                 dirOffset = 1
-                lowest = Matrix[current_r+er][current_c+ec]
+                lowest = x
+
         if 2 in next: 
-            if Matrix[current_r+directions2[neighbours[2]][0]][current_c+directions2[neighbours[2]][1]] < lowest:
-                er, ec = directions2[neighbours[2]]
+            er, ec = directions2[neighbours[2]]
+            x = Matrix[current_r+er][current_c+ec]
+            if x < lowest:
                 dirOffset = 2
-                lowest = Matrix[current_r+er][current_c+ec]
-        if 3 in next: 
-            if Matrix[current_r+directions2[neighbours[3]][0]][current_c+directions2[neighbours[3]][1]] < lowest:
-                er, ec = directions2[neighbours[3]]
+                lowest = x
+
+        if 3 in next:
+            er, ec = directions2[neighbours[3]]
+            x = Matrix[current_r+er][current_c+ec]
+            if x < lowest:
                 dirOffset = 3
-                lowest = Matrix[current_r+er][current_c+ec]
+                lowest = x 
+
 
 
         #TODO: ADD DIAGONAL PATH FOLLOWING ABILITIES
@@ -214,7 +234,6 @@ def main():
         current_r += er
         current_c += ec
         currentPos = Matrix[current_r][current_c]
-    print(steps)
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "./maze-solver/src/models",
+        "./maze-solver/src/maps",
+        "./maze-solver/src"
+    ]
+}
