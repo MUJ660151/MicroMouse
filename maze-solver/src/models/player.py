@@ -28,20 +28,15 @@ class Player(pygame.sprite.Sprite, Maze):
             #y*Player.stepVal+Player.halfStepVal-self.h/2)#self.x-self.w/2,self.y-self.h/2)
 
     def blitme(self, prev): # dirty = [all prev]
-        print(self.background)
         self.screen.blit(self.background, prev, prev)
         self.screen.blit(self.image, (self.rect.x, self.rect.y))
         pygame.display.update([prev, self.rect])
 
-    def check_wall(self, orOffset=0, distance=stepVal):
+    def check_wall(self, orOffset=0, distance=halfStepVal):
         future_rect = self.rect.copy()
-        tdir = self.rotation + 90*orOffset
-        if tdir > 360:
-            tdir -= 360
-        elif tdir < 0:
-            tdir+= 360
-        dx = math.sin(tdir)*distance
-        dy = math.cos(tdir)*distance
+        tdir = math.radians(self.rotation + 90*orOffset)
+        dx = math.cos(tdir)*distance
+        dy = -(math.sin(tdir)*distance)
         future_rect.x += dx
         future_rect.y += dy
 
@@ -62,39 +57,21 @@ class Player(pygame.sprite.Sprite, Maze):
         return self.x*Player.stepVal+10, self.y*Player.stepVal+10
     def move_forward(self, distance=stepVal):
         old_rect = self.rect.copy()
+        dx, dy = 0,0
         if self.check_wall():
             raise MouseCrashedError 
-        """if self.rotation == 0:
-            if self.array[self.y][self.x+1] == ' ':
-                self.x += 2
-                self.rect.x+= distance
-            else:
-                print("mouse crashed")
-        elif self.rotation ==90:
-            if self.array[self.y+1][self.x] == ' ':
-                self.y += 2
-                self.rect.y+= distance
-            else:
-                print("mouse crashed")
-        elif self.rotation == 180:
-            if self.array[self.y][self.x-1] == ' ':
-                self.x -= 2
-                self.rect.x-= distance
-            else:
-                print("mouse crashed")
-        elif self.rotation == 270:
-            if self.array[self.y-1][self.x] == ' ':
-                self.y -= 2
-                self.rect.y-= distance
-            else:
-                print("mouse crashed")
         else:
-            self.rotate_on_center(-self.rotation)
-        self.blitme(old_rect)"""
-        
+            tdir = math.radians(self.rotation)
+            dx = math.cos(tdir)
+            dy = -(math.sin(tdir))
+            self.x += int(dx)
+            self.y += int(dy)
+            self.rect.x += dx*distance
+            self.rect.y += dy*distance
+            self.blitme(old_rect)
+
 
     def rotate_on_center(self, angle):
-        #gets distorted if not multiple of 90
         self.rotation = (self.rotation +angle) % 360
         self.orientaion = int(self.rotation/45)
         old_rect = self.rect.copy()

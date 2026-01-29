@@ -17,10 +17,6 @@ class App:
     def on_event(self, event):
         if event.type == pygame.QUIT:
             self._running = False
-    def on_loop():
-        pass
-    def on_render():
-        pass
     def on_cleanup():
         pygame.quit()
     def on_execute(self):
@@ -50,9 +46,10 @@ background = background.convert()
 maze = Maze(filepath, background)
 #maze.draw_maze(background) 
 
-sprite = Player(0, 15, playerImg, screen, maze, background)
+sprite = Player(6, 6, playerImg, screen, maze, background)
 screen.blit(background, (0,0))
 screen.blit(sprite.image, sprite.rect)
+maze.set_wall(1, 13, screen, 0)
 pygame.display.flip()
 while running:
     """
@@ -64,7 +61,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    sprite.rotate_on_center(90)
+    if not sprite.check_wall():
+        sprite.move_forward()
+    else:
+        sprite.rotate_on_center(90)
 
 
     

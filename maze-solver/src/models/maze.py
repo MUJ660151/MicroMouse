@@ -16,6 +16,8 @@ class Maze:
         self.HEIGHT = len(self.MAZE_DATA) *Maze.CELL_SIZE
         self.pathVal = ' '
         self.background = self.draw_maze(screen)
+        self.goalPos = None
+        self.startPos = None
 
     def __txt_to_list(self, filename):
         array = []
@@ -27,12 +29,24 @@ class Maze:
                 line = f.readline()
             f.close()
         return array
+    
     def get_center_tiles(self):
         return [self.MAZE_DATA[self.goalPos[1]-1][self.goalPos[0]-1],
         self.MAZE_DATA[self.goalPos[1]+1][self.goalPos[0]-1],
         self.MAZE_DATA[self.goalPos[1]-1][self.goalPos[0]+1],
         self.MAZE_DATA[self.goalPos[1]+1][self.goalPos[0]+1]]
     
+    def set_wall(self, x, y, screen, dir=0):
+        if dir == 0:
+            posX = (Maze.CELL_SIZE + Maze.WALL_WIDTH)*x+Maze.WALL_WIDTH
+            posY = (Maze.CELL_SIZE + Maze.WALL_WIDTH)*y
+            pygame.draw.rect(screen, (60, 0, 255), ((posX, posY), (Maze.CELL_SIZE, Maze.WALL_WIDTH)))
+        elif dir == 1:
+            posX = (Maze.CELL_SIZE + Maze.WALL_WIDTH)*x
+            posY = (Maze.CELL_SIZE + Maze.WALL_WIDTH)*y+Maze.WALL_WIDTH
+            pygame.draw.rect(screen, (60, 0, 255), ((posX, posY), (Maze.WALL_WIDTH, Maze.CELL_SIZE)))
+
+
     def draw_maze(self, screen):
         screen.fill(Maze.PATH_COLOR)
         wallsUp = 0
@@ -58,9 +72,11 @@ class Maze:
                     pygame.draw.rect(screen, Maze.PATH_COLOR, ((posX, posY), (rHeight, rWidth)))
                 elif col != 'S':# and col != 'G':
                     pygame.draw.rect(screen, Maze.WALL_COLOR, ((posX, posY), (rHeight, rWidth)))
-                    self.wallList.append((posX, posY))
+                    self.wallList.append(((posX, posY), (rHeight, rWidth)))
                     if col == 'G':
                         self.goalPos = (x,y)
+                else:
+                    self.startPos = (x, y)
                 """else:
                     print("unrecognized character", x, y)"""
             if y %2==0:
