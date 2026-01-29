@@ -1,12 +1,8 @@
 import pygame
 import sys
-from models.maze import Maze
-from models.player import Player
-
-class Game:
-    def __init__(self):
-            pygame.init()
-            
+from objects.maze import Maze
+from objects.player import Player
+from objects.solver import Solver
 
 filepath = 'maze-solver/src/maps/94japan.txt'
 playerImg = 'maze-solver/bluecreep.png'
@@ -26,25 +22,28 @@ sprite = Player(0, 15, playerImg, screen, maze, background)
 screen.blit(background, (0,0))
 screen.blit(sprite.image, sprite.rect)
 
+def loop():
+    pass
+
 pygame.display.flip()
 while running:
-    """
-    events()
+    
+    '''events()
     loop()
     render()
-    """
+    
+    sensor()
+    planner()
+    actuator()
+    render()'''
+    
     time_passed = clock.tick(60)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    if not sprite.check_wall():
-        sprite.move_forward()
-    else:
-        sprite.rotate_on_center(90)
+    
 
 print(time_passed)
     
-
-
 pygame.quit()
 sys.exit()

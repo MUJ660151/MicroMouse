@@ -1,7 +1,9 @@
 from collections import deque
+from objects.player import Player
 class Solver:
     directions = [(0, 2, -1, 0), (1, 3,0,1), (2, 0,1,0), (3, 1, 0, -1)]
-    def __init__(self, startCoords=(0,15)):
+    def __init__(self, player, startCoords=(0,15)):
+        self.player = player
         self.width, self.height = 16, 16 #make size adaptable
         self.startCoords = startCoords
         self.center = ((7,7), (7,8), (8,7), (8,8)) #make size adaptable
@@ -28,10 +30,6 @@ class Solver:
         else:
             self.array[self.target[0]][self.target[1]][0] = 0
 
-
-    def return_to_goal_array_vals(self):
-        pass
-
     def floodfill(self):
         visited_in_loop = [[False for c in range(self.width)] for r in range(self.height)]
         queue = deque(self.target)
@@ -53,6 +51,9 @@ class Solver:
                 print(col[0], end = " ")
             print()
     
+    def set_wall(self):
+        pass
+        
     def get_neighbours(self, r, c):
         return self.array[r-1][c], self.array[r][c+1],self.array[r+1][c],self.array[r][c-1]
     
