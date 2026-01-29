@@ -13,7 +13,6 @@ class Player(pygame.sprite.Sprite, Maze):
     def __init__(self, x, y, image, screen, maze, background):
         self.background = background
         self.maze = maze
-        self.array = maze.MAZE_DATA
         self.screen = screen
         self.speed = 0
         self.rotation = 0
@@ -24,8 +23,7 @@ class Player(pygame.sprite.Sprite, Maze):
         self.image = self.OG_IMAGE
         self.w = self.image.get_width()
         self.h = self.image.get_height()
-        self.rect = self.image.get_rect().move(x*Player.stepVal+10, y*Player.stepVal+10)#x*Player.stepVal+Player.halfStepVal-self.w/2, \
-            #y*Player.stepVal+Player.halfStepVal-self.h/2)#self.x-self.w/2,self.y-self.h/2)
+        self.rect = self.image.get_rect().move(x*Player.stepVal+10, y*Player.stepVal+10)
 
     def blitme(self, prev): # dirty = [all prev]
         self.screen.blit(self.background, prev, prev)
@@ -53,8 +51,7 @@ class Player(pygame.sprite.Sprite, Maze):
     def wall_left(self):
         return self.check_wall(3)
 
-    def get_pos(self):
-        return self.x*Player.stepVal+10, self.y*Player.stepVal+10
+
     def move_forward(self, distance=stepVal):
         old_rect = self.rect.copy()
         dx, dy = 0,0
@@ -64,8 +61,8 @@ class Player(pygame.sprite.Sprite, Maze):
             tdir = math.radians(self.rotation)
             dx = math.cos(tdir)
             dy = -(math.sin(tdir))
-            self.x += int(dx)
-            self.y += int(dy)
+            self.x += int(dx)*2
+            self.y += int(dy)*2
             self.rect.x += dx*distance
             self.rect.y += dy*distance
             self.blitme(old_rect)
