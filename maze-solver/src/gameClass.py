@@ -14,15 +14,21 @@ class Game:
         self.background = pygame.Surface(self.screen.get_size()).convert()
         self.maze = Maze(filepath, self.background)
         self.player = Player(0, 15, playerImg)
+        self.solver = Solver()
         self.screen.blit(self.background, (0,0))
         self.screen.blit(self.player.image, self.player.rect)
         pygame.display.flip()
 
         self.clock = pygame.time.Clock()
         self.running = True
+
     def on_loop(self):
-        
+        self.solver.floodfill()
+        neighbours = self.solver.get_neighbours()
+        angle = self.player.get_angle_offset(, neighbours)
+        self.player.rotate_on_center(angle)
         pass
+        
     def run(self):
         while self.running:
             self.time_passed = self.clock.tick(60)
