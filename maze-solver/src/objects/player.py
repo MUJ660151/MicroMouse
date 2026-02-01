@@ -28,7 +28,7 @@ class Player(Maze, pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move((x)*Player.stepVal+10, (y)*Player.stepVal+10)
         #self.offsets = [0, 1,2,3]
 
-    def blitme(self, prev): # dirty = [all prev]
+    def blitme(self, prev): # dirty = [all prev] image=None if image is none iamge = self.image
         self.screen.blit(self.background, prev, prev)
         self.screen.blit(self.image, (self.rect.x, self.rect.y))
         pygame.display.update([prev, self.rect])
