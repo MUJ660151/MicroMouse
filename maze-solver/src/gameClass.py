@@ -13,10 +13,10 @@ class Game:
         playerImg = 'maze-solver/bluecreep.png'
         self.background = pygame.Surface(self.screen.get_size()).convert()
         self.maze = Maze(filepath, self.background)
-        self.player = Player(0, 15, playerImg)
+        self.sprite = Player(0, 15, playerImg)
         self.solver = Solver()
         self.screen.blit(self.background, (0,0))
-        self.screen.blit(self.player.image, self.player.rect)
+        self.screen.blit(self.sprite.image, self.sprite.rect)
         pygame.display.flip()
 
         self.clock = pygame.time.Clock()
@@ -25,8 +25,9 @@ class Game:
     def on_loop(self):
         self.solver.floodfill()
         neighbours = self.solver.get_neighbours()
-        angle = self.player.get_angle_offset(, neighbours)
-        self.player.rotate_on_center(angle)
+        #add self.x and self.y updates
+        angle = self.sprite.get_angle_offset((self.x, self.y), neighbours)
+        self.sprite.rotate_on_center(angle)
         pass
         
     def run(self):
@@ -35,13 +36,19 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+            self.solver.floodfill()
+            currentPos = (self.sprite.y, self.sprite.x)
+            neighbours = self.solver.get_neighbours(currentPos[0], currentPos[1])
+            angle = self.sprite.get_angle_offset(self.solver.array[currentPos[0]][currentPos[1]], neighbours)
+            self.sprite.rotate_on_center(angle)
+            self.sprite.move_forward()
         pygame.quit()
         sys.exit()
 
-    def update_screen(self):
-        self.screen.blit(self.background, prev, prev)
-        self.screen.blit(self.image, (self.rect.x, self.rect.y))
-        pygame.display.update([prev, self.rect])
+    def update_screen(self, dirty, new):
+        self.screen.blit(self.background, dirty, dirty)
+        self.screen.blit(new, (new.rect.x, new.rect.y))
+        pygame.display.update([dirty, new.rect])
 
 if __name__ == "__main__":
     g = Game()

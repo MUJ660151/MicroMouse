@@ -7,15 +7,6 @@ from objects.solver import Solver
 filepath = 'maze-solver/src/maps/94japan.txt'
 playerImg = 'maze-solver/bluecreep.png'
 
-
-def convert_millis(milliseconds):
-    # 1. Calculate total seconds and remaining milliseconds
-    total_seconds, remaining_ms = divmod(milliseconds, 1000)
-    
-    # 2. Calculate minutes and remaining seconds
-    minutes, seconds = divmod(total_seconds, 60)
-    
-    return f"{minutes}:{seconds}.{remaining_ms}"
 def blitSpot(background, image, image_rect):
     #screen.blits([(background, image_rect),(image, image_rect)])
     screen.blit(background, image_rect, image_rect)
@@ -32,7 +23,7 @@ if True or __name__ == "__main__":
     game_active = True
 
     screen = pygame.display.set_mode((Maze.SCREEN_WIDTH, Maze.SCREEN_HEIGHT), pygame.RESIZABLE | pygame.SCALED)
-    background = pygame.Surface(screen.get_size())
+    background = pygame.Surface(screen.get_size()).convert()
     background = background.convert()
 
     maze = Maze(filepath, background)
@@ -92,17 +83,11 @@ if True or __name__ == "__main__":
                     if solver.target == solver.center: #completed first run to center
                         solver.set_goal([solver.startCoords])
                         loops +=1
-                        ms = pygame.time.get_ticks()
-                        print(convert_millis(ms))
                     elif solver.target == [solver.startCoords]: # completed return to start
                         solver.set_goal(solver.center)
                         loops+=1
-                        ms2 = pygame.time.get_ticks() -ms
-                        print(convert_millis(ms2))
                 else:
                     game_active = False
-                    ms3 = pygame.time.get_ticks() - ms - ms2
-                    print(convert_millis(ms3))
             solver.reset_array_vals()
 
 
